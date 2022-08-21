@@ -1,2 +1,14 @@
 #!/usr/bin/env bash
-echo "Glog is here"
+openGithubCommitOnRemote() {
+  read commit
+    
+	if [ ! -z "$commit" ]; then
+    owner="wix-private"
+    repo=$(basename `git rev-parse --show-toplevel`)
+    open -a "Google Chrome" "https://github.com/$owner/$repo/commit/$commit"
+  fi
+}
+
+format='%Cred%h%Creset %Cgreen%<(13)%cr%Creset %C(bold blue)%<(16)%an%Creset %s %C(auto)%d%Creset' 
+git log origin/main --decorate-refs-exclude=refs/tags --pretty=format:"${format}" --abbrev-commit | fzf --ansi --no-sort --exact --preview 'git show {1} | delta' | awk '{print $1}' | tr -d '\n' | openGithubCommitOnRemote
+
