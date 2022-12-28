@@ -1,14 +1,81 @@
-#!/usr/bin/env bash
+# !/usr/bin/env bash
+
+if [ "$1" == "--version" ]; then
+  echo "glogm version 1.0"
+  echo "https://github.com/DanielKag/glogm"
+  exit 0
+fi
+
 openGithubCommitOnRemote() {
+  base_url=$(git config --get remote.origin.url )
+  base_url="${base_url/.git/}"
+
+  if  [[ $base_url=~^git@.* ]] ; then
+    base_url="${base_url/com:/com/}"
+    base_url="${base_url/git@/http://}"
+  fi
+  
   read commit
-    
-	if [ ! -z "$commit" ]; then
+  
+  if [ ! -z "$commit" ]; then
     owner="wix-private"
     repo=$(basename `git rev-parse --show-toplevel`)
-    open -a "Google Chrome" "https://github.com/$owner/$repo/commit/$commit"
+    open -a "Google Chrome" "$base_url/commit/$commit"
   fi
 }
 
-format='%Cred%h%Creset %Cgreen%<(13)%cr%Creset %C(bold blue)%<(16)%an%Creset %s %C(auto)%d%Creset' 
-git log origin/main --decorate-refs-exclude=refs/tags --pretty=format:"${format}" --abbrev-commit | fzf --ansi --no-sort --exact --preview 'git show {1} | delta' | awk '{print $1}' | tr -d '\n' | openGithubCommitOnRemote
+DARK_GRAY="${DARK_GRAY:-$(tput setaf 0)}"
+RED="${RED:-$(tput setaf 1)}"
+GREEN="${GREEN:-$(tput setaf 2)}"
+YELLOW="${YELLOW:-$(tput setaf 3)}"
+BLUE="${BLUE:-$(tput setaf 4)}"
+MAGENTA="${MAGENTA:-$(tput setaf 5)}"
+CYAN="${CYAN:-$(tput setaf 6)}"
+WHITE="${WHITE:-$(tput setaf 7)}"
+GRAY="${GRAY:-$(tput setaf 8)}"
+BOLD="${BOLD:-$(tput bold)}"
+UNDERLINE="${UNDERLINE:-$(tput sgr 0 1)}"
+INVERT="${INVERT:-$(tput sgr 1 0)}"
+NORMAL="${NORMAL:-$(tput sgr0)}"
+
+function git_main_branch() {
+  base_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+  
+  if [ ! -z "$base_branch" ]; then
+    echo $base_branch
+  else
+    def=`git remote show origin | sed -n '/HEAD branch/s/.*: //p'`
+    echo $def
+  fi
+}
+
+base_branch=$(git_main_branch)
+remote_base_branch="origin/$base_branch"
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+command_head="git -c color.ui=always log HEAD \
+            --decorate-refs-exclude=refs/tags --abbrev-commit \
+            --pretty=format:'%C(bold dim cyan)%h%Creset %Cgreen%<(13)%cr%Creset %C(bold blue)%<(16)%an%Creset %s %C(auto)%d%Creset'"
+
+command_master="git -c color.ui=always log $remote_base_branch \
+            --decorate-refs-exclude=refs/tags --abbrev-commit \
+            --pretty=format:'%C(bold dim cyan)%h%Creset %Cgreen%<(13)%cr%Creset %C(bold blue)%<(16)%an%Creset %s %C(auto)%d%Creset'"
+
+header=$(printf "<Tab>    Toggle commit diff\n<Enter>  See commit in github\n<R> Refresh\n← →      Choose branch")
+head_prompt="${INVERT}${current_branch} (HEAD) ${NORMAL} ${remote_base_branch}"
+base_prompt="${current_branch} (HEAD) ${INVERT}${remote_base_branch}${NORMAL}"
+eval "echo '$head_prompt'; $command_head" \
+  | fzf --ansi --no-sort --exact \
+       --header "$header" \
+       --header-lines=1 \
+       --reverse \
+       --bind='tab:toggle-preview' \
+       --bind "R:reload(git fetch && echo '$base_prompt'; $command_master)" \
+       --bind "left:reload(echo '$head_prompt'; $command_head)" \
+       --bind "right:reload(echo '$base_prompt'; $command_master)" \
+       --preview-window down \
+       --preview-window hidden \
+       --preview 'git show {1} | delta' \
+          | cut -d\  -f 1 \
+          | openGithubCommitOnRemote
 
