@@ -20,7 +20,7 @@ openGithubCommitOnRemote() {
   if [ ! -z "$commit" ]; then
     owner="wix-private"
     repo=$(basename `git rev-parse --show-toplevel`)
-    open -a "Google Chrome" "$base_url/commit/$commit"
+    open "$base_url/commit/$commit"
   fi
 }
 
@@ -73,7 +73,7 @@ eval "echo '$head_prompt'; $command_head" \
        --bind "R:reload(git fetch && echo '$base_prompt'; $command_master)" \
        --bind "left:reload(echo '$head_prompt'; $command_head)" \
        --bind "right:reload(echo '$base_prompt'; $command_master)" \
-       --preview-window down \
+       --preview-window right \
        --preview-window hidden \
        --preview 'git show {1} | delta' \
           | cut -d\  -f 1 \
