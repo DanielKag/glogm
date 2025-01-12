@@ -1,7 +1,7 @@
 # !/usr/bin/env bash
 
 if [ "$1" == "--version" ]; then
-  echo "glogm version 1.0"
+  echo "glogm version 1.2"
   echo "https://github.com/DanielKag/glogm"
   exit 0
 fi
