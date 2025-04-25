@@ -38,19 +38,29 @@ show_command_selector() {
         show_usage
         exit 1
     fi
-    
+
     # Create a temporary file for the command list
     temp_file=$(mktemp)
-    
+
     # Generate command list from the registry
     generate_command_list "$temp_file"
-    
-    # Use fzf to select a command
-    selected=$(cat "$temp_file" | fzf --ansi --no-sort --reverse --header="Select a command:" | cut -d ' ' -f 1)
-    
+
+    # Count the number of commands for dynamic height sizing
+    cmd_count=$(wc -l <"$temp_file")
+    # Add 1 for the header and ensure a minimum size
+    fzf_height=$((cmd_count + 3))
+
+    # Use fzf to select a command with dynamic height
+    selected=$(cat "$temp_file" | fzf --ansi --no-sort --reverse \
+        --height=$fzf_height \
+        --header="Select a command:" \
+        --margin=0,0,0,0 \
+        --border=none |
+        cut -d ' ' -f 1)
+
     # Clean up
     rm "$temp_file"
-    
+
     # If a command was selected, run it
     if [ -n "$selected" ]; then
         execute_command "$selected"
