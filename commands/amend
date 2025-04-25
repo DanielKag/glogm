@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Source utils and consts from parent directory
+source "$PARENT_DIR/utils"
+source "$PARENT_DIR/consts"
+
+# Amend the latest commit without changing the commit message
+echo "Amending the last commit..."
+git commit --amend --no-edit
+
+echo "${GREEN}✓${NORMAL} Commit amended successfully!" 

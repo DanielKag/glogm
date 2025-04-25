@@ -3,11 +3,17 @@
 # This file contains the registry of all available commands
 # It is used to dynamically generate the command list and handle execution
 
+# Define the commands directory
+COMMANDS_DIR="commands"
+
 # Define the command structure
 # Format: command_name|description|script_file|default_args
 declare -a COMMANDS=(
     "log|Display git log with interactive fzf interface|log|"
     "checkout|Checkout functionality|checkout|"
+    "amend|Amend last commit without changing message|amend|"
+    "yolo|Force push with lease and skip verification hooks|yolo|"
+    "restore|Restore a file to the version from main branch|restore|"
     # Add new commands here in the same format
     # "command_name|description|script_file|default_args"
 )
@@ -41,7 +47,7 @@ get_command_file() {
     for cmd_entry in "${COMMANDS[@]}"; do
         IFS='|' read -r name description file default_args <<<"$cmd_entry"
         if [[ "$name" == "$cmd_name" ]]; then
-            echo "$file"
+            echo "$COMMANDS_DIR/$file"  # Path is now inside commands directory
             return 0
         fi
     done
