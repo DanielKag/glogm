@@ -3,6 +3,9 @@
 VERSION="1.2"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
+# Source the commands registry
+source "$SCRIPT_DIR/commands.sh"
+
 # Handle version flag
 if [ "$1" == "--version" ]; then
     echo "glogm version $VERSION"
@@ -15,38 +18,65 @@ show_usage() {
     echo "Usage: glogm [command]"
     echo ""
     echo "Commands:"
-    echo "  log        Display git log with interactive fzf interface"
-    echo "  checkout   Checkout functionality"
+
+    # Display all registered commands in the usage
+    for cmd in $(get_command_names); do
+        desc=$(get_command_description "$cmd")
+        printf "  %-10s %s\n" "$cmd" "$desc"
+    done
+
     echo "  --version  Show version information"
     echo ""
     exit 1
 }
 
-# If no arguments are provided, show usage
+# Interactive command selector using fzf
+show_command_selector() {
+    # Check if fzf is available
+    if ! command -v fzf >/dev/null 2>&1; then
+        echo "fzf is not installed. Showing usage instead."
+        show_usage
+        exit 1
+    fi
+    
+    # Create a temporary file for the command list
+    temp_file=$(mktemp)
+    
+    # Generate command list from the registry
+    generate_command_list "$temp_file"
+    
+    # Use fzf to select a command
+    selected=$(cat "$temp_file" | fzf --ansi --no-sort --reverse --header="Select a command:" | cut -d ' ' -f 1)
+    
+    # Clean up
+    rm "$temp_file"
+    
+    # If a command was selected, run it
+    if [ -n "$selected" ]; then
+        execute_command "$selected"
+        exit $?
+    else
+        # No command selected, exit
+        exit 0
+    fi
+}
+
+# If no arguments are provided, show interactive command selector
 if [ $# -eq 0 ]; then
-    show_usage
+    show_command_selector
 fi
 
 # Handle command
 COMMAND=$1
 shift
 
-case "$COMMAND" in
-log)
-    # Use the log functionality
-    "$SCRIPT_DIR/log" "$@"
-    exit 0
-    ;;
-checkout)
-    # Use the checkout functionality
-    "$SCRIPT_DIR/checkout" "$@"
-    exit 0
-    ;;
-help | --help | -h)
+# Use the command registry to execute the command
+if command_exists "$COMMAND"; then
+    execute_command "$COMMAND" "$@"
+    exit $?
+elif [[ "$COMMAND" == "help" || "$COMMAND" == "--help" || "$COMMAND" == "-h" ]]; then
     show_usage
-    ;;
-*)
+else
     echo "Unknown command: $COMMAND"
     show_usage
-    ;;
-esac
+fi
