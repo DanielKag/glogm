@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
+# Source utils and consts
+source "$SCRIPT_DIR/utils"
+source "$SCRIPT_DIR/consts"
+
+# Simple checkout command for now
+echo "Checking out..." 

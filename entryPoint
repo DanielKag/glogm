@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+VERSION="1.2"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+
+# Handle version flag
+if [ "$1" == "--version" ]; then
+    echo "glogm version $VERSION"
+    echo "https://github.com/DanielKag/glogm"
+    exit 0
+fi
+
+# Function to display usage information
+show_usage() {
+    echo "Usage: glogm [command]"
+    echo ""
+    echo "Commands:"
+    echo "  log        Display git log with interactive fzf interface"
+    echo "  checkout   Checkout functionality"
+    echo "  --version  Show version information"
+    echo ""
+    exit 1
+}
+
+# If no arguments are provided, show usage
+if [ $# -eq 0 ]; then
+    show_usage
+fi
+
+# Handle command
+COMMAND=$1
+shift
+
+case "$COMMAND" in
+log)
+    # Use the log functionality
+    "$SCRIPT_DIR/log" "$@"
+    exit 0
+    ;;
+checkout)
+    # Use the checkout functionality
+    "$SCRIPT_DIR/checkout" "$@"
+    exit 0
+    ;;
+help | --help | -h)
+    show_usage
+    ;;
+*)
+    echo "Unknown command: $COMMAND"
+    show_usage
+    ;;
+esac
