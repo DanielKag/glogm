@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# Get the directory of this script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-
-# Call the entryPoint script with all arguments
-"$SCRIPT_DIR/entryPoint" "$@"
