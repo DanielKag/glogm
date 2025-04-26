@@ -17,9 +17,10 @@ handle_commit_actions() {
     local temp_menu=$(mktemp)
     # Add separator
     echo -e "----------------------------------------" >"$temp_menu"
-    echo -e "${BLUE}Open in Github${NORMAL}" >>"$temp_menu"
-    echo -e "${GREEN}Copy commit hash${NORMAL}" >>"$temp_menu"
-    echo -e "${YELLOW}Revert commit${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}Open in Github${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}Copy hash${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}Checkout${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}Revert${NORMAL}" >>"$temp_menu"
 
     # Create preview command to show the commit diff
     local preview_cmd="git show --color=always $commit_hash | delta"
@@ -50,11 +51,15 @@ handle_commit_actions() {
         # Copy commit hash to clipboard
         echo -n "$commit_hash" | pbcopy
         echo "${GREEN}✓${NORMAL} Commit hash copied to clipboard: $commit_hash"
+    elif [[ "$action" == *"Checkout"* ]]; then
+        # Checkout the commit
+        git checkout "$commit_hash"
+        echo "${GREEN}✓${NORMAL} Checked out commit: $commit_hash"
     elif [[ "$action" == *"Revert commit"* ]]; then
         # Create revert command and copy to clipboard
         local revert_cmd="git revert $commit_hash"
         echo -n "$revert_cmd" | pbcopy
-        echo "${YELLOW}!${NORMAL} Revert command copied to clipboard: $revert_cmd"
+        echo "${GREEN}!${NORMAL} Revert command copied to clipboard: $revert_cmd"
         echo "Paste and run the command to revert the commit."
     fi
-} 
+}
