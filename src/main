@@ -3,15 +3,9 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Source utils and consts from parent directory
-source "$PARENT_DIR/utils"
-source "$PARENT_DIR/consts"
-
-if [ "$1" == "--version" ]; then
-    echo "glogm version 1.2"
-    echo "https://github.com/DanielKag/glogm"
-    exit 0
-fi
+# Source utils and consts from current directory
+source "$SCRIPT_DIR/utils"
+source "$SCRIPT_DIR/consts"
 
 # Function to handle actions on a selected commit
 handle_commit_actions() {
