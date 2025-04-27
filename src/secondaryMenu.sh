@@ -18,7 +18,7 @@ handle_commit_actions() {
     # Add separator
     echo -e "----------------------------------------" >"$temp_menu"
     echo -e "${GREEN}Open in Github${NORMAL}" >>"$temp_menu"
-    echo -e "${GREEN}Copy hash${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}Copy sha${NORMAL}" >>"$temp_menu"
     echo -e "${GREEN}Checkout${NORMAL}" >>"$temp_menu"
     echo -e "${GREEN}Revert${NORMAL}" >>"$temp_menu"
 
@@ -47,7 +47,7 @@ handle_commit_actions() {
     if [[ "$action" == *"Open in Github"* ]]; then
         # Open in Github
         openGithubCommitOnRemote <<<"$commit_hash"
-    elif [[ "$action" == *"Copy commit hash"* ]]; then
+    elif [[ "$action" == *"Copy sha"* ]]; then
         # Copy commit hash to clipboard
         echo -n "$commit_hash" | pbcopy
         echo "${GREEN}✓${NORMAL} Commit hash copied to clipboard: $commit_hash"
@@ -55,7 +55,7 @@ handle_commit_actions() {
         # Checkout the commit
         git checkout "$commit_hash"
         echo "${GREEN}✓${NORMAL} Checked out commit: $commit_hash"
-    elif [[ "$action" == *"Revert commit"* ]]; then
+    elif [[ "$action" == *"Revert"* ]]; then
         # Create revert command and copy to clipboard
         local revert_cmd="git revert $commit_hash"
         echo -n "$revert_cmd" | pbcopy
