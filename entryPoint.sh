@@ -11,5 +11,5 @@ if [ "$1" == "--version" ]; then
 fi
 
 # Just run the log command directly
-"$SCRIPT_DIR/src/main" "$@"
+"$SCRIPT_DIR/src/main.sh" "$@"
 exit $?

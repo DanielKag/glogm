@@ -4,8 +4,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Source utils and consts from current directory
-source "$SCRIPT_DIR/utils"
-source "$SCRIPT_DIR/consts"
+source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/consts.sh"
 source "$SCRIPT_DIR/secondaryMenu.sh"
 
 # Main log view function
