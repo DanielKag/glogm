@@ -31,6 +31,7 @@ show_log() {
         fzf --ansi --no-sort --exact \
             --header "$header" \
             --header-lines=1 \
+            --prompt="Type to search: " \
             --reverse \
             --bind='tab:toggle-preview' \
             --bind "R:reload(git fetch && echo '$base_prompt'; $command_master)" \

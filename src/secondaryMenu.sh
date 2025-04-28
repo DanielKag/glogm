@@ -28,6 +28,9 @@ handle_commit_actions() {
     # Show the action menu with fzf
     local action=$(cat "$temp_menu" | fzf --ansi \
         --no-multi \
+        --info=hidden \
+        --prompt="Select an action: " \
+        --exact \
         --header="$header_text" \
         --header-lines=1 \
         --preview="$preview_cmd" \
