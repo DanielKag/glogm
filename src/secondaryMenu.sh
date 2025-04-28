@@ -7,11 +7,11 @@ handle_commit_actions() {
     # Get commit details
     local author=$(git show -s --format='%an' $commit_hash)
     local commit_date=$(git show -s --format='%cr' $commit_hash)
-    
+
     # Create header with commit details, matching log colors
     # Bold dim cyan for hash, Green for date, Bold blue for author
     local header_text="${CYAN}${commit_hash}${NORMAL} ${GREEN}${commit_date}${NORMAL} ${BOLD}${BLUE}${author}${NORMAL}"
-    
+
     # Create temporary file for the menu
     local temp_menu=$(mktemp)
     # Add separator

@@ -16,7 +16,7 @@ show_log() {
 
     command_head="git -c color.ui=always log HEAD \
                 --decorate-refs-exclude=refs/tags --abbrev-commit \
-                --pretty=format:'%C(bold dim cyan)%h%Creset %Cgreen%<(13)%cr%Creset %C(bold blue)%<(16)%an%Creset %s %C(auto)%d%Creset'"
+                --pretty=format:'%C(bold dim cyan)%h%Creset %C(green)%<(13)%cr%Creset %C(bold blue)%<(16)%an%Creset %s %C(auto)%d%Creset'"
 
     command_master="git -c color.ui=always log $remote_base_branch \
                 --decorate-refs-exclude=refs/tags --abbrev-commit \
