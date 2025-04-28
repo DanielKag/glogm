@@ -17,6 +17,7 @@ handle_commit_actions() {
     # Add separator
     echo -e "----------------------------------------" >"$temp_menu"
     echo -e "${GREEN}Open in Github${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}Open Pull Request${NORMAL}" >>"$temp_menu"
     echo -e "${GREEN}Copy sha${NORMAL}" >>"$temp_menu"
     echo -e "${GREEN}Checkout${NORMAL}" >>"$temp_menu"
     echo -e "${GREEN}Revert${NORMAL}" >>"$temp_menu"
@@ -46,6 +47,9 @@ handle_commit_actions() {
     if [[ "$action" == *"Open in Github"* ]]; then
         # Open in Github
         openGithubCommitOnRemote <<<"$commit_hash"
+    elif [[ "$action" == *"Open Pull Request"* ]]; then
+        # Use the utility function to open the pull request
+        openPullRequestFromCommit <<<"$commit_hash"
     elif [[ "$action" == *"Copy sha"* ]]; then
         # Copy commit hash to clipboard
         echo -n "$commit_hash" | pbcopy
