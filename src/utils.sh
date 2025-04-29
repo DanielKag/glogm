@@ -50,12 +50,37 @@ openPullRequestFromCommit() {
 
 # Function to determine the main branch of a git repository
 git_main_branch() {
-  base_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+  # Try symbolic-ref first (fast)
+  local base_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
 
-  if [ ! -z "$base_branch" ]; then
-    echo $base_branch
-  else
-    def=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
-    echo $def
+  # If symbolic-ref fails, check cache before using slower method
+  if [ -z "$base_branch" ]; then
+    # Get current repo path and cache file location
+    local repo_path=$(git rev-parse --show-toplevel)
+    local cache_file="$HOME/.glogm"
+
+    # Check if cache file exists and try to find entry for current repo
+    if [ -f "$cache_file" ]; then
+      local cached_branch=$(grep "^$repo_path:" "$cache_file" | cut -d':' -f2)
+      if [ ! -z "$cached_branch" ]; then
+        echo "$cached_branch"
+        return
+      fi
+    fi
+
+    # If not in cache, use git remote show origin (slower but more reliable)
+    base_branch=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+
+    # Cache the result permanently
+    if [ ! -z "$base_branch" ]; then
+      # Create cache file if it doesn't exist
+      touch "$cache_file"
+      # Remove any existing entry for this repo
+      sed -i.bak "/^$repo_path:/d" "$cache_file" 2>/dev/null
+      # Add new entry
+      echo "$repo_path:$base_branch" >>"$cache_file"
+    fi
   fi
+
+  echo "$base_branch"
 }
