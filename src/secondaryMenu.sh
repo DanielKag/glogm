@@ -16,11 +16,11 @@ handle_commit_actions() {
     local temp_menu=$(mktemp)
     # Add separator
     echo -e "----------------------------------------" >"$temp_menu"
-    echo -e "${GREEN}Open in Github${NORMAL}" >>"$temp_menu"
-    echo -e "${GREEN}Open Pull Request${NORMAL}" >>"$temp_menu"
-    echo -e "${GREEN}Copy sha${NORMAL}" >>"$temp_menu"
-    echo -e "${GREEN}Checkout${NORMAL}" >>"$temp_menu"
-    echo -e "${GREEN}Revert${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}1. Open in Github${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}2. Open Pull Request${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}3. Copy sha${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}4. Checkout${NORMAL}" >>"$temp_menu"
+    echo -e "${GREEN}5. Revert${NORMAL}" >>"$temp_menu"
 
     # Create preview command to show the commit diff
     local preview_cmd="git show --color=always $commit_hash | delta"
@@ -47,21 +47,21 @@ handle_commit_actions() {
     fi
 
     # Process the selected action
-    if [[ "$action" == *"Open in Github"* ]]; then
+    if [[ "$action" == 1.* ]]; then
         # Open in Github
         openGithubCommitOnRemote <<<"$commit_hash"
-    elif [[ "$action" == *"Open Pull Request"* ]]; then
+    elif [[ "$action" == 2.* ]]; then
         # Use the utility function to open the pull request
         openPullRequestFromCommit <<<"$commit_hash"
-    elif [[ "$action" == *"Copy sha"* ]]; then
+    elif [[ "$action" == 3.* ]]; then
         # Copy commit hash to clipboard
         echo -n "$commit_hash" | pbcopy
         echo "${GREEN}✓${NORMAL} Commit hash copied to clipboard: $commit_hash"
-    elif [[ "$action" == *"Checkout"* ]]; then
+    elif [[ "$action" == 4.* ]]; then
         # Checkout the commit
         git checkout "$commit_hash"
         echo "${GREEN}✓${NORMAL} Checked out commit: $commit_hash"
-    elif [[ "$action" == *"Revert"* ]]; then
+    elif [[ "$action" == 5.* ]]; then
         # Create revert command and copy to clipboard
         local revert_cmd="git revert $commit_hash"
         echo -n "$revert_cmd" | pbcopy
